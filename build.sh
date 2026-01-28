@@ -68,16 +68,21 @@ sbml-sim() (
 )
 
 # make a wasm from the libsbmlsim
+# https://dev.to/joyhughes/a-simple-web-app-using-vitereact-c-emscripten-webassembly-and-a-web-worker-48ia
+# https://ppuzio.medium.com/c-in-the-browser-with-webassembly-via-emscripten-vite-and-react-bd82e0598a5e
 wasm-lib() {
     echo "##### Creating WASM #####"
     emcc -Oz \
         -sDISABLE_EXCEPTION_CATCHING=0 \
         -sMODULARIZE=1 \
-        -sSINGLE_FILE=1 \
+        -sENVIRONMENT=web,worker,node \
+        -sEXPORT_ES6=1 \
         -sEXPORT_NAME=libsbmlsim \
         -sALLOW_MEMORY_GROWTH=1 \
         --closure 1 \
+        --no-entry \
         -lembind \
+        --emit-tsd libsbmlsim.d.ts \
         "-I$INSTALL_DIR/sbmlsim/include" \
         "-I$INSTALL_DIR/sbml/include" \
         "-I$INSTALL_DIR/expat/include" \
